@@ -13,8 +13,8 @@ channel.onCordovaReady.subscribe(function() {
 
   var success = function(url) {
     console.log('after success');
-    console.log(url);
     // If url != null, we were launched with an intent
+    console.log(url);
     channel.onAppIndexingReady.fire();
   };
   var fail = function() {

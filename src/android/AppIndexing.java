@@ -4,6 +4,7 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaArgs;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaActivity;
+import org.apache.cordova.PluginResult;
 
 import android.content.Intent;
 import android.util.Log;
@@ -23,7 +24,7 @@ public class AppIndexing extends CordovaPlugin {
      * Constructor.
      */
     public AppIndexing() {
-      Log.e(LOG_TAG, " XX Plugin Constructor");
+      // Log.e(LOG_TAG, " XX Plugin Constructor");
       // TODO: Can we prevent first flash of content by changing start url?
     }
 
@@ -32,7 +33,7 @@ public class AppIndexing extends CordovaPlugin {
      */
     @Override
     protected void pluginInitialize() {
-      Log.e(LOG_TAG, " XX Plugin Initialize");
+      // Log.e(LOG_TAG, " XX Plugin Initialize");
     }
 
     /**
@@ -44,13 +45,7 @@ public class AppIndexing extends CordovaPlugin {
      */
     @Override
     public void onReset() {
-      Log.e(LOG_TAG, " XX Plugin Reset");
-
-      Intent intent = cordova.getActivity().getIntent();
-      Uri uri = getDeepLinkFromIntent(intent);
-      if (uri != null) {
-        navigateTo(uri);
-      }
+      // Log.e(LOG_TAG, " XX Plugin Reset");
     }
 
     /**
@@ -58,7 +53,7 @@ public class AppIndexing extends CordovaPlugin {
      */
     @Override
     public void onDestroy() {
-      Log.e(LOG_TAG, " XX Plugin Destroy");
+      // Log.e(LOG_TAG, " XX Plugin Destroy");
     }
 
     /**
@@ -92,7 +87,7 @@ public class AppIndexing extends CordovaPlugin {
     public void onNewIntent(Intent intent) {
       Log.e(LOG_TAG, " XX NEW INTENT");
 
-      Uri uri = getDeepLinkFromIntent(intent);
+      String uri = getDeepLinkFromIntent(intent);
       if (uri != null) {
         navigateTo(uri);
       }
@@ -101,39 +96,34 @@ public class AppIndexing extends CordovaPlugin {
 
 
     private void registerCallbacks(CordovaArgs args, CallbackContext callbackContext) {
-      callbackContext.success();
-
       Intent intent = cordova.getActivity().getIntent();
-      Uri uri = getDeepLinkFromIntent(intent);
+      String uri = getDeepLinkFromIntent(intent);
+
+      PluginResult result = new PluginResult(PluginResult.Status.OK, uri);
+      result.setKeepCallback(true);
+      callbackContext.sendPluginResult(result);
+
+      // Hack for startup:
       if (uri != null) {
         navigateTo(uri);
       }
     }
 
-    private Uri getDeepLinkFromIntent(Intent intent) {
+    private String getDeepLinkFromIntent(Intent intent) {
       if (intent == null || intent.getAction() != INTENT_TYPE) {
         // TODO: any other signals for deep links?
         return null;
       }
-      final Uri data = intent.getData();
-      /*
-      if (data.getScheme() != SCHEME_TYPE) { // TODO: scheme packageID format?
+      final Uri uri = intent.getData();
+      if (!uri.getScheme().equals(SCHEME_TYPE)) { // TODO: support scheme packageID format
         return null;
       }
-      */
-      return data;
+      // TODO: get everything after the www/
+      return uri.getEncodedFragment();
     }
 
-    private void navigateTo(final Uri uri) {
-      /*
-      cordova.getActivity().runOnUiThread(new Runnable() {
-        public void run() {
-          //webView.loadUrl("#" + data.getEncodedFragment());
-          webView.sendJavascript("location.hash = '" + uri.getEncodedFragment() + "'"); // TODO: .getFragment?
-        }
-      });
-      */
-      webView.sendJavascript("location.hash = '" + uri.getEncodedFragment() + "'");
+    private void navigateTo(final String uri) {
+      webView.sendJavascript("location.hash = '" + uri + "'");
     }
 }
 
