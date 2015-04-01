@@ -9,3 +9,7 @@ Add to `AndroidManifest.xml`:
     <data android:host="PACKAGE_ID" android:pathPrefix="" android:scheme="android-app" />
 </intent-filter>
 ```
+
+```
+adb shell am start -W -a android.intent.action.VIEW -d <URI> <PACKAGE>
+```
