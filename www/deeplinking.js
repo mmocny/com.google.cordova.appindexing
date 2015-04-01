@@ -3,8 +3,8 @@ var argscheck = require('cordova/argscheck'),
     exec = require('cordova/exec'),
     cordova = require('cordova');
 
-channel.createSticky('onAppIndexingReady');
-channel.waitForInitialization('onAppIndexingReady');
+channel.createSticky('onDeepLinkingReady');
+channel.waitForInitialization('onDeepLinkingReady');
 
 console.log('before cordova ready');
 
@@ -15,13 +15,13 @@ channel.onCordovaReady.subscribe(function() {
     console.log('after success');
     // If url != null, we were launched with an intent
     console.log(url);
-    channel.onAppIndexingReady.fire();
+    channel.onDeepLinkingReady.fire();
   };
   var fail = function() {
     console.log('after fail');
-    channel.onAppIndexingReady.fire();
+    channel.onDeepLinkingReady.fire();
   };
-  exec(success, fail, "AppIndexing", "registerCallbacks", []);
+  exec(success, fail, "DeepLinking", "registerCallbacks", []);
 });
 
 //module.exports;
